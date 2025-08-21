@@ -33,6 +33,6 @@ public class SubmissionAnswer {
     @Column(name = "score", nullable = false)
     private BigDecimal score = BigDecimal.ZERO;
 
-    @Column(name = "elapsed_time_seconds")
-    private Integer elapsedTimeSeconds;
+    @Column(name = "solving_time")
+    private Integer solvingTime;
 }

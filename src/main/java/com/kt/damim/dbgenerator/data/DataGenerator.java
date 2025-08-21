@@ -97,8 +97,8 @@ public class DataGenerator implements CommandLineRunner {
     // 과목 코드 (0: 과학, 1: 수학, 2: 영어, 3: 국어)
     private static final int[] SUBJECT_CODES = {0, 1, 2, 3};
     
-    // 학년 목록
-    private static final String[] SCHOOL_YEARS = {"3", "4"};
+    // 학년 목록 (정수)
+    private static final int[] SCHOOL_YEARS = {3, 4};
     
     // 소단원 목록 (과목별)
     private static final String[][] SUBJECT_UNITS = {
@@ -403,7 +403,7 @@ public class DataGenerator implements CommandLineRunner {
             for (int i = 0; i < config.getClassPerTeacher(); i++) {
                 int subjectCode = SUBJECT_CODES[classIndex % SUBJECT_CODES.length];
                 String subject = SUBJECTS[subjectCode];
-                String schoolYear = SCHOOL_YEARS[random.nextInt(SCHOOL_YEARS.length)];
+                int schoolYear = SCHOOL_YEARS[random.nextInt(SCHOOL_YEARS.length)];
                 String semester = SEMESTERS[random.nextInt(SEMESTERS.length)];
                 
                 // 시간 충돌이 없는 요일/시간 조합 찾기
@@ -424,7 +424,7 @@ public class DataGenerator implements CommandLineRunner {
                 Class classEntity = Class.builder()
                         .teacherId(teacher.getUserId())
                         .teacherName(TEACHER_NAMES[teachers.indexOf(teacher) % TEACHER_NAMES.length])
-                        .className(unit)
+                        .className(schoolYear + "학년 " + subject + " - " + unit)
                         .semester(semester)
                         .schoolYear(schoolYear)
                         .subject(subjectCode)
@@ -858,6 +858,20 @@ public class DataGenerator implements CommandLineRunner {
         submission.setSubmittedAt(Instant.now());
         submission.setTotalScore(totalScore);
         submission.setFeedback("잘 했습니다! 더 노력하세요.");
+        // 피드백 상태/요청 시간/재시도 횟수 설정
+        // 40% 확률로 피드백 요청, 그 외 NONE
+        double fr = random.nextDouble();
+        if (fr < 0.4) {
+            submission.setFeedbackStatus(Submission.FeedbackStatus.REQUESTED);
+            // 제출 시점 이후 0~10분 내 요청
+            submission.setFeedbackRequestedAt(Instant.now().plusSeconds(random.nextInt(600)));
+            // 재시도는 0~2회 랜덤
+            submission.setFeedbackRetryCount(random.nextInt(3));
+        } else {
+            submission.setFeedbackStatus(Submission.FeedbackStatus.NONE);
+            submission.setFeedbackRequestedAt(null);
+            submission.setFeedbackRetryCount(0);
+        }
         
         return submission;
     }
@@ -887,7 +901,7 @@ public class DataGenerator implements CommandLineRunner {
         answer.setAnswerText(answerText);
         answer.setIsCorrect(isCorrect);
         answer.setScore(score);
-        answer.setElapsedTimeSeconds(30 + random.nextInt(120)); // 30~150초
+        answer.setSolvingTime(30 + random.nextInt(120)); // 30~150초
         
         return answer;
     }
