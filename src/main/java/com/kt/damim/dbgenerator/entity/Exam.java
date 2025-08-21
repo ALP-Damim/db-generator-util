@@ -5,7 +5,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+import java.time.Clock;
 import java.time.Instant;
+import java.time.ZoneId;
 
 @Entity
 @Table(name = "exams")
@@ -32,5 +35,5 @@ public class Exam {
     private Integer createdBy;
 
     @Column(name = "created_at", nullable = false)
-    private Instant createdAt = Instant.now();
+    private Instant createdAt = Instant.now(Clock.system(ZoneId.of("Asia/Seoul")));
 }

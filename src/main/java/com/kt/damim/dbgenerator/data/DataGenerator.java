@@ -29,10 +29,12 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -57,6 +59,10 @@ public class DataGenerator implements CommandLineRunner {
     private final SubmissionAnswerRepository submissionAnswerRepository;
     
     private final Random random = new Random();
+    
+    // 한국 시간대 설정
+    private static final ZoneId KOREA_ZONE = ZoneId.of("Asia/Seoul");
+    private static final Clock KOREA_CLOCK = Clock.system(KOREA_ZONE);
     
     // 교사 이름 목록
     private static final String[] TEACHER_NAMES = {
@@ -317,7 +323,7 @@ public class DataGenerator implements CommandLineRunner {
                     .passwordHash("hashed_password_teacher_" + (i + 1))
                     .role(User.UserRole.TEACHER)
                     .isActive(true)
-                    .createdAt(OffsetDateTime.now())
+                    .createdAt(OffsetDateTime.now(KOREA_ZONE))
                     .build();
             
             teachers.add(userRepository.save(teacher));
@@ -335,7 +341,7 @@ public class DataGenerator implements CommandLineRunner {
                     .passwordHash("hashed_password_student_" + (i + 1))
                     .role(User.UserRole.STUDENT)
                     .isActive(true)
-                    .createdAt(OffsetDateTime.now())
+                    .createdAt(OffsetDateTime.now(KOREA_ZONE))
                     .build();
             
             students.add(userRepository.save(student));
@@ -357,7 +363,7 @@ public class DataGenerator implements CommandLineRunner {
                     .birthDate(generateRandomBirthDate(25, 50)) // 초등학교 교사는 25-50세
                     .school(SCHOOLS[random.nextInt(SCHOOLS.length)])
                     .phone("010-" + String.format("%04d", random.nextInt(10000)) + "-" + String.format("%04d", random.nextInt(10000)))
-                    .createdAt(OffsetDateTime.now())
+                    .createdAt(OffsetDateTime.now(KOREA_ZONE))
                     .build();
             
             userProfileRepository.save(profile);
@@ -377,7 +383,7 @@ public class DataGenerator implements CommandLineRunner {
                     .birthDate(generateRandomBirthDate(8, 11)) // 초등학교 3-4학년 학생은 8-11세
                     .school(SCHOOLS[random.nextInt(SCHOOLS.length)])
                     .phone("010-" + String.format("%04d", random.nextInt(10000)) + "-" + String.format("%04d", random.nextInt(10000)))
-                    .createdAt(OffsetDateTime.now())
+                    .createdAt(OffsetDateTime.now(KOREA_ZONE))
                     .build();
             
             userProfileRepository.save(profile);
@@ -385,7 +391,7 @@ public class DataGenerator implements CommandLineRunner {
     }
     
     private LocalDate generateRandomBirthDate(int minAge, int maxAge) {
-        int currentYear = OffsetDateTime.now().getYear();
+        int currentYear = OffsetDateTime.now(KOREA_ZONE).getYear();
         int birthYear = currentYear - minAge - random.nextInt(maxAge - minAge + 1);
         int birthMonth = 1 + random.nextInt(12);
         int birthDay = 1 + random.nextInt(28); // 간단히 28일로 제한
@@ -433,7 +439,7 @@ public class DataGenerator implements CommandLineRunner {
                         .startsAt(schedule.startTime)
                         .endsAt(schedule.endTime)
                         .capacity(20 + random.nextInt(31)) // 20-50명
-                        .createdAt(OffsetDateTime.now())
+                        .createdAt(OffsetDateTime.now(KOREA_ZONE))
                         .build();
                 
                 Class savedClass = classRepository.save(classEntity);
@@ -512,7 +518,7 @@ public class DataGenerator implements CommandLineRunner {
     
     private List<Session> generateSessions(List<Class> classes) {
         List<Session> sessions = new ArrayList<>();
-        OffsetDateTime now = OffsetDateTime.now();
+        OffsetDateTime now = OffsetDateTime.now(KOREA_ZONE);
         
         for (Class classEntity : classes) {
             // 강의 요일과 시간 정보 가져오기
@@ -648,7 +654,7 @@ public class DataGenerator implements CommandLineRunner {
                         .studentId(student.getUserId())
                         .classId(selectedClass.getClassId())
                         .status("ENROLLED")
-                        .createdAt(OffsetDateTime.now())
+                        .createdAt(OffsetDateTime.now(KOREA_ZONE))
                         .build();
                 
                 enrollments.add(enrollmentRepository.save(enrollment));
@@ -700,7 +706,7 @@ public class DataGenerator implements CommandLineRunner {
     
     private int generateAttendances(List<User> students, List<Session> sessions) {
         int attendanceCount = 0;
-        OffsetDateTime now = OffsetDateTime.now();
+        OffsetDateTime now = OffsetDateTime.now(KOREA_ZONE);
         
         for (User student : students) {
             // 학생이 수강하는 클래스의 세션들만 필터링
@@ -733,7 +739,7 @@ public class DataGenerator implements CommandLineRunner {
     
     private int generateExams(List<Session> sessions, List<Class> classes) {
         int examCount = 0;
-        OffsetDateTime now = OffsetDateTime.now();
+        OffsetDateTime now = OffsetDateTime.now(KOREA_ZONE);
         
         for (Session session : sessions) {
             // 과거 세션에만 시험 생성 (현재 시간보다 이전)
@@ -788,7 +794,7 @@ public class DataGenerator implements CommandLineRunner {
         exam.setDifficulty(difficulty);
         exam.setIsReady(true);
         exam.setCreatedBy(sessionClass.getTeacherId());
-        exam.setCreatedAt(Instant.now());
+        exam.setCreatedAt(Instant.now(KOREA_CLOCK));
         
         return exam;
     }
@@ -855,7 +861,7 @@ public class DataGenerator implements CommandLineRunner {
         Submission submission = new Submission();
         submission.setExamId(exam.getId().intValue());
         submission.setUserId(student.getUserId());
-        submission.setSubmittedAt(Instant.now());
+        submission.setSubmittedAt(Instant.now(KOREA_CLOCK));
         submission.setTotalScore(totalScore);
         submission.setFeedback("잘 했습니다! 더 노력하세요.");
         // 피드백 상태/요청 시간/재시도 횟수 설정
@@ -864,7 +870,7 @@ public class DataGenerator implements CommandLineRunner {
         if (fr < 0.4) {
             submission.setFeedbackStatus(Submission.FeedbackStatus.REQUESTED);
             // 제출 시점 이후 0~10분 내 요청
-            submission.setFeedbackRequestedAt(Instant.now().plusSeconds(random.nextInt(600)));
+            submission.setFeedbackRequestedAt(Instant.now(KOREA_CLOCK).plusSeconds(random.nextInt(600)));
             // 재시도는 0~2회 랜덤
             submission.setFeedbackRetryCount(random.nextInt(3));
         } else {
