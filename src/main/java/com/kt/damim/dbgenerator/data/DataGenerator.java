@@ -424,7 +424,7 @@ public class DataGenerator implements CommandLineRunner {
                 Class classEntity = Class.builder()
                         .teacherId(teacher.getUserId())
                         .teacherName(TEACHER_NAMES[teachers.indexOf(teacher) % TEACHER_NAMES.length])
-                        .className(schoolYear + "학년 " + subject + " - " + unit)
+                        .className(unit)
                         .semester(semester)
                         .schoolYear(schoolYear)
                         .subject(subjectCode)
