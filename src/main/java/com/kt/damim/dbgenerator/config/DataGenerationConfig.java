@@ -14,6 +14,7 @@ public class DataGenerationConfig {
     private int enrollmentPerStudent = 5;
     private int sessionPerClass = 20;
     private double attendanceRate = 0.7; // 70% 출석률
+    private double examPerSessionRate = 0.7; // 70% 세션에 시험 생성
     
     public boolean isEnabled() {
         return enabled;
@@ -69,5 +70,13 @@ public class DataGenerationConfig {
     
     public void setAttendanceRate(double attendanceRate) {
         this.attendanceRate = attendanceRate;
+    }
+    
+    public double getExamPerSessionRate() {
+        return examPerSessionRate;
+    }
+    
+    public void setExamPerSessionRate(double examPerSessionRate) {
+        this.examPerSessionRate = examPerSessionRate;
     }
 }

@@ -7,18 +7,29 @@ import com.kt.damim.dbgenerator.entity.Enrollment;
 import com.kt.damim.dbgenerator.entity.Session;
 import com.kt.damim.dbgenerator.entity.User;
 import com.kt.damim.dbgenerator.entity.UserProfile;
+import com.kt.damim.dbgenerator.entity.Exam;
+import com.kt.damim.dbgenerator.entity.Question;
+import com.kt.damim.dbgenerator.entity.Submission;
+import com.kt.damim.dbgenerator.entity.SubmissionAnswer;
+import com.kt.damim.dbgenerator.entity.QuestionType;
 import com.kt.damim.dbgenerator.repository.AttendanceRepository;
 import com.kt.damim.dbgenerator.repository.ClassRepository;
 import com.kt.damim.dbgenerator.repository.EnrollmentRepository;
 import com.kt.damim.dbgenerator.repository.SessionRepository;
 import com.kt.damim.dbgenerator.repository.UserRepository;
 import com.kt.damim.dbgenerator.repository.UserProfileRepository;
+import com.kt.damim.dbgenerator.repository.ExamRepository;
+import com.kt.damim.dbgenerator.repository.QuestionRepository;
+import com.kt.damim.dbgenerator.repository.SubmissionRepository;
+import com.kt.damim.dbgenerator.repository.SubmissionAnswerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
@@ -40,6 +51,10 @@ public class DataGenerator implements CommandLineRunner {
     private final SessionRepository sessionRepository;
     private final EnrollmentRepository enrollmentRepository;
     private final AttendanceRepository attendanceRepository;
+    private final ExamRepository examRepository;
+    private final QuestionRepository questionRepository;
+    private final SubmissionRepository submissionRepository;
+    private final SubmissionAnswerRepository submissionAnswerRepository;
     
     private final Random random = new Random();
     
@@ -104,6 +119,96 @@ public class DataGenerator implements CommandLineRunner {
         {LocalTime.of(15, 0), LocalTime.of(16, 30)}
     };
     
+    // 시험 관련 상수
+    private static final String[] EXAM_DIFFICULTIES = {"EASY", "MEDIUM", "HARD"};
+    
+    // 시험 문제 세트 (과목별)
+    private static final String[][] EXAM_QUESTIONS = {
+        // 자바프로그래밍
+        {
+            "Java에서 상속을 나타내는 키워드는?",
+            "Java의 기본 데이터 타입 중 정수형이 아닌 것은?",
+            "Java에서 메모리 관리는 어떻게 이루어지는가?",
+            "Java의 접근 제어자 중 가장 제한적인 것은?",
+            "Java에서 다형성을 구현하는 방법은?",
+            "Java에서 인터페이스와 추상클래스의 차이점은?",
+            "Java의 컬렉션 프레임워크에서 List와 Set의 차이점은?",
+            "Java에서 예외처리를 위한 키워드는?",
+            "Java의 스레드와 프로세스의 차이점은?",
+            "Java에서 제네릭(Generic)의 목적은?"
+        },
+        // 데이터베이스
+        {
+            "SQL에서 데이터를 조회하는 명령어는?",
+            "데이터베이스 정규화의 목적은?",
+            "트랜잭션의 ACID 속성 중 A는?",
+            "인덱스의 주요 목적은?",
+            "외래키(Foreign Key)의 역할은?",
+            "SQL에서 JOIN의 종류는?",
+            "데이터베이스 백업의 중요성은?",
+            "SQL Injection 공격이란?",
+            "데이터베이스 성능 최적화 방법은?",
+            "NoSQL 데이터베이스의 특징은?"
+        },
+        // 웹개발
+        {
+            "HTTP 메서드 중 데이터를 생성하는 것은?",
+            "REST API의 특징이 아닌 것은?",
+            "세션과 쿠키의 차이점은?",
+            "CORS 정책의 목적은?",
+            "웹 보안에서 XSS 공격이란?",
+            "웹 서버와 웹 애플리케이션 서버의 차이점은?",
+            "HTTPS의 동작 원리는?",
+            "웹 캐싱의 장점은?",
+            "반응형 웹 디자인의 특징은?",
+            "웹 접근성의 중요성은?"
+        }
+    };
+    
+    // 객관식 선택지 세트
+    private static final String[][] MULTIPLE_CHOICE_OPTIONS = {
+        {"extends", "implements", "super", "this"},
+        {"int", "double", "long", "float"},
+        {"가비지 컬렉션", "수동 해제", "참조 카운팅", "메모리 풀"},
+        {"private", "public", "protected", "default"},
+        {"오버라이딩", "오버로딩", "캡슐화", "상속"},
+        {"인터페이스", "추상클래스", "클래스", "열거형"},
+        {"순서 있음 vs 순서 없음", "중복 허용 vs 중복 불허", "인덱스 접근 vs 반복자 접근", "크기 고정 vs 크기 가변"},
+        {"try-catch", "if-else", "switch-case", "for-while"},
+        {"공유 메모리 vs 독립 메모리", "가벼움 vs 무거움", "동시 실행 vs 순차 실행", "생성 비용 vs 생성 비용"},
+        {"타입 안전성", "코드 재사용", "성능 향상", "메모리 절약"},
+        {"SELECT", "INSERT", "UPDATE", "DELETE"},
+        {"데이터 중복 제거", "성능 향상", "보안 강화", "용량 절약"},
+        {"Atomicity", "Availability", "Accuracy", "Accessibility"},
+        {"검색 속도 향상", "저장 공간 절약", "데이터 무결성", "백업 용이성"},
+        {"참조 무결성", "데이터 중복", "성능 향상", "보안 강화"},
+        {"INNER JOIN", "LEFT JOIN", "RIGHT JOIN", "FULL JOIN"},
+        {"데이터 보호", "성능 향상", "용량 절약", "접근 제어"},
+        {"SQL 명령어 삽입", "스크립트 삽입", "파일 업로드", "세션 하이재킹"},
+        {"인덱스 최적화", "쿼리 최적화", "정규화", "모든 것"},
+        {"스키마 없음", "관계형 모델", "ACID 보장", "SQL 사용"},
+        {"GET", "POST", "PUT", "DELETE"},
+        {"무상태성", "캐시 가능", "계층화 시스템", "세션 기반"},
+        {"서버 저장 vs 클라이언트 저장", "용량 차이", "보안 수준", "생명주기"},
+        {"보안 강화", "성능 향상", "호환성 확보", "접근 제어"},
+        {"스크립트 삽입", "SQL 삽입", "CSRF 공격", "DDoS 공격"},
+        {"정적 파일 vs 동적 처리", "단일 서버 vs 분산 서버", "단순 vs 복잡", "빠름 vs 느림"},
+        {"SSL/TLS 암호화", "HTTP 암호화", "세션 암호화", "쿠키 암호화"},
+        {"성능 향상", "대역폭 절약", "서버 부하 감소", "모든 것"},
+        {"반응형 레이아웃", "모바일 최적화", "크로스 브라우징", "모든 것"},
+        {"사용자 편의성", "법적 요구사항", "SEO 최적화", "모든 것"}
+    };
+    
+    // 단답형 답안 세트
+    private static final String[] SHORT_ANSWER_ANSWERS = {
+        "extends", "double", "가비지 컬렉션", "private", "오버라이딩",
+        "인터페이스", "순서 있음 vs 순서 없음", "try-catch", "공유 메모리 vs 독립 메모리", "타입 안전성",
+        "SELECT", "데이터 중복 제거", "Atomicity", "검색 속도 향상", "참조 무결성",
+        "INNER JOIN", "데이터 보호", "SQL 명령어 삽입", "인덱스 최적화", "스키마 없음",
+        "POST", "무상태성", "서버 저장 vs 클라이언트 저장", "보안 강화", "스크립트 삽입",
+        "정적 파일 vs 동적 처리", "SSL/TLS 암호화", "성능 향상", "반응형 레이아웃", "사용자 편의성"
+    };
+    
     @Override
     public void run(String... args) throws Exception {
         if (!config.isEnabled()) {
@@ -147,10 +252,14 @@ public class DataGenerator implements CommandLineRunner {
         int attendanceCount = generateAttendances(students, sessions);
         log.info("{}개의 출석 데이터를 생성했습니다.", attendanceCount);
         
+        // 7. 시험 데이터 생성
+        int examCount = generateExams(sessions, classes);
+        log.info("{}개의 시험을 생성했습니다.", examCount);
+        
         long endTime = System.currentTimeMillis();
         log.info("데이터 생성이 완료되었습니다. 소요시간: {}ms", endTime - startTime);
         
-        printStatistics(teachers.size(), students.size(), classes.size(), sessions.size(), enrollments.size(), attendanceCount);
+        printStatistics(teachers.size(), students.size(), classes.size(), sessions.size(), enrollments.size(), attendanceCount, examCount);
     }
     
     private List<User> generateTeachers() {
@@ -568,6 +677,167 @@ public class DataGenerator implements CommandLineRunner {
         return attendanceCount;
     }
     
+    private int generateExams(List<Session> sessions, List<Class> classes) {
+        int examCount = 0;
+        OffsetDateTime now = OffsetDateTime.now();
+        
+        for (Session session : sessions) {
+            // 과거 세션에만 시험 생성 (현재 시간보다 이전)
+            if (session.getOnDate().isBefore(now)) {
+                // 확률에 따라 시험 생성
+                if (random.nextDouble() < config.getExamPerSessionRate()) {
+                    // 해당 세션의 클래스 찾기
+                    Class sessionClass = classes.stream()
+                            .filter(c -> c.getClassId().equals(session.getClassId()))
+                            .findFirst()
+                            .orElse(null);
+                    
+                    if (sessionClass != null) {
+                        // 시험 생성
+                        Exam exam = createExam(session, sessionClass);
+                        examRepository.save(exam);
+                        
+                        // 문제 생성 (5~8개 랜덤)
+                        int questionCount = 5 + random.nextInt(4); // 5~8개
+                        List<Question> questions = createQuestions(exam, questionCount);
+                        questionRepository.saveAll(questions);
+                        
+                        // 수강생들의 제출물 생성
+                        List<User> enrolledStudents = getEnrolledStudents(sessionClass.getClassId());
+                        for (User student : enrolledStudents) {
+                            Submission submission = createSubmission(exam, student, questions);
+                            submissionRepository.save(submission);
+                            
+                            // 각 문제별 답안 생성
+                            for (Question question : questions) {
+                                SubmissionAnswer answer = createSubmissionAnswer(submission, question, student);
+                                submissionAnswerRepository.save(answer);
+                            }
+                        }
+                        
+                        examCount++;
+                    }
+                }
+            }
+        }
+        
+        return examCount;
+    }
+    
+    private Exam createExam(Session session, Class sessionClass) {
+        String examName = sessionClass.getClassName() + " 중간고사";
+        String difficulty = EXAM_DIFFICULTIES[random.nextInt(EXAM_DIFFICULTIES.length)];
+        
+        Exam exam = new Exam();
+        exam.setSessionId(session.getSessionId());
+        exam.setName(examName);
+        exam.setDifficulty(difficulty);
+        exam.setIsReady(true);
+        exam.setCreatedBy(sessionClass.getTeacherId());
+        exam.setCreatedAt(Instant.now());
+        
+        return exam;
+    }
+    
+    private List<Question> createQuestions(Exam exam, int questionCount) {
+        List<Question> questions = new ArrayList<>();
+        
+        // 과목에 따른 문제 세트 선택
+        int subjectIndex = Math.abs(exam.getName().hashCode()) % EXAM_QUESTIONS.length;
+        String[] subjectQuestions = EXAM_QUESTIONS[subjectIndex];
+        String[] subjectChoices = MULTIPLE_CHOICE_OPTIONS[subjectIndex];
+        String[] subjectAnswers = SHORT_ANSWER_ANSWERS;
+        
+        for (int i = 0; i < questionCount; i++) {
+            QuestionType qtype = random.nextBoolean() ? QuestionType.MCQ : QuestionType.SHORT;
+            String body = subjectQuestions[i % subjectQuestions.length];
+            String choices = null;
+            String answerKey = null;
+            
+            if (qtype == QuestionType.MCQ) {
+                // 객관식인 경우
+                choices = "[\"" + String.join("\",\"", subjectChoices[i % subjectChoices.length]) + "\"]";
+                answerKey = String.valueOf(1 + random.nextInt(4)); // 1~4번 중 랜덤
+            } else {
+                // 단답형인 경우
+                answerKey = subjectAnswers[i % subjectAnswers.length];
+            }
+            
+            Question question = new Question();
+            question.setExamId(exam.getId().intValue());
+            question.setQtype(qtype);
+            question.setBody(body);
+            question.setChoices(choices);
+            question.setAnswerKey(answerKey);
+            question.setPoints(BigDecimal.valueOf(10)); // 각 문제 10점
+            question.setPosition(i + 1);
+            
+            questions.add(question);
+        }
+        
+        return questions;
+    }
+    
+    private List<User> getEnrolledStudents(Integer classId) {
+        List<Enrollment> enrollments = enrollmentRepository.findByClassId(classId);
+        List<Integer> studentIds = enrollments.stream()
+                .map(Enrollment::getStudentId)
+                .collect(Collectors.toList());
+        
+        return userRepository.findAllById(studentIds);
+    }
+    
+    private Submission createSubmission(Exam exam, User student, List<Question> questions) {
+        // 답안들을 먼저 생성하여 총점 계산
+        BigDecimal totalScore = BigDecimal.ZERO;
+        List<SubmissionAnswer> answers = new ArrayList<>();
+        
+        for (Question question : questions) {
+            SubmissionAnswer answer = createSubmissionAnswer(null, question, student);
+            answers.add(answer);
+            totalScore = totalScore.add(answer.getScore());
+        }
+        
+        Submission submission = new Submission();
+        submission.setExamId(exam.getId().intValue());
+        submission.setUserId(student.getUserId());
+        submission.setSubmittedAt(Instant.now());
+        submission.setTotalScore(totalScore);
+        submission.setFeedback("잘 했습니다! 더 노력하세요.");
+        
+        return submission;
+    }
+    
+    private SubmissionAnswer createSubmissionAnswer(Submission submission, Question question, User student) {
+        String answerText;
+        boolean isCorrect;
+        BigDecimal score;
+        
+        if (question.getQtype() == QuestionType.MCQ) {
+            // 객관식 답안
+            int studentAnswer = 1 + random.nextInt(4); // 1~4번 중 랜덤
+            answerText = String.valueOf(studentAnswer);
+            isCorrect = answerText.equals(question.getAnswerKey());
+        } else {
+            // 단답형 답안
+            answerText = question.getAnswerKey(); // 정답으로 설정 (실제로는 다양한 답안이 있을 수 있음)
+            isCorrect = random.nextDouble() < 0.8; // 80% 확률로 정답
+        }
+        
+        score = isCorrect ? question.getPoints() : BigDecimal.ZERO;
+        
+        SubmissionAnswer answer = new SubmissionAnswer();
+        answer.setExamId(question.getExamId());
+        answer.setUserId(student.getUserId());
+        answer.setQuestionId(question.getId().intValue());
+        answer.setAnswerText(answerText);
+        answer.setIsCorrect(isCorrect);
+        answer.setScore(score);
+        answer.setElapsedTimeSeconds(30 + random.nextInt(120)); // 30~150초
+        
+        return answer;
+    }
+    
     private List<Session> getStudentSessions(User student, List<Session> allSessions) {
         // 학생이 수강하는 클래스의 세션들만 반환
         List<Enrollment> enrollments = enrollmentRepository.findByStudentId(student.getUserId());
@@ -604,7 +874,7 @@ public class DataGenerator implements CommandLineRunner {
     }
     
     private void printStatistics(int teacherCount, int studentCount, int classCount, 
-                                int sessionCount, int enrollmentCount, int attendanceCount) {
+                                int sessionCount, int enrollmentCount, int attendanceCount, int examCount) {
         log.info("=== 데이터 생성 통계 ===");
         log.info("교사: {}명", teacherCount);
         log.info("학생: {}명", studentCount);
@@ -612,6 +882,7 @@ public class DataGenerator implements CommandLineRunner {
         log.info("세션: {}개", sessionCount);
         log.info("수강신청: {}개", enrollmentCount);
         log.info("출석기록: {}개", attendanceCount);
+        log.info("시험: {}개", examCount);
         log.info("평균 출석률: {:.1f}%", (double) attendanceCount / (studentCount * sessionCount) * 100);
         log.info("=====================");
     }
