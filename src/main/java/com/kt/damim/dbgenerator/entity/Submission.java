@@ -6,10 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.Clock;
 import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
 
 @Entity
 @Table(name = "submissions")
@@ -23,7 +20,7 @@ public class Submission {
     private Integer userId;
 
     @Column(name = "submitted_at", nullable = false)
-    private Instant submittedAt = Instant.now(Clock.system(ZoneId.of("Asia/Seoul")));
+    private Instant submittedAt = Instant.now();
 
     @Column(name = "total_score", nullable = false)
     private BigDecimal totalScore = BigDecimal.ZERO;
@@ -42,6 +39,10 @@ public class Submission {
     private Integer feedbackRetryCount = 0;
 
     public enum FeedbackStatus {
-        NONE, REQUESTED, IN_PROGRESS, COMPLETED, FAILED
+        NONE,
+        REQUESTED,
+        IN_PROGRESS,
+        COMPLETED,
+        FAILED
     }
 }
