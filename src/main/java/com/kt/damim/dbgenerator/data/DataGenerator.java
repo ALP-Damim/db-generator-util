@@ -72,30 +72,44 @@ public class DataGenerator implements CommandLineRunner {
         "전학생", "제학생", "하학생", "고학생", "문학생"
     };
     
-    // 학교 목록
+    // 학교 목록 (초등학교)
     private static final String[] SCHOOLS = {
-        "서울대학교", "연세대학교", "고려대학교", "성균관대학교", "한양대학교",
-        "중앙대학교", "경희대학교", "동국대학교", "홍익대학교", "건국대학교"
+        "서울초등학교", "연세초등학교", "고려초등학교", "성균관초등학교", "한양초등학교",
+        "중앙초등학교", "경희초등학교", "동국초등학교", "홍익초등학교", "건국초등학교"
     };
     
-    // 희망 과목 목록
+    // 희망 과목 목록 (초등학교)
     private static final String[] DESIRED_COURSES = {
-        "자바프로그래밍", "웹개발", "모바일앱개발", "데이터분석", "인공지능",
-        "게임개발", "보안", "클라우드컴퓨팅", "DevOps", "블록체인"
+        "과학", "수학", "영어", "국어", "사회", "음악", "미술", "체육", "실과", "도덕"
     };
     
-    // 희망 직업 목록
+    // 희망 직업 목록 (초등학교)
     private static final String[] DESIRED_JOBS = {
-        "소프트웨어 개발자", "웹 개발자", "모바일 앱 개발자", "데이터 분석가", "AI 엔지니어",
-        "게임 개발자", "보안 전문가", "DevOps 엔지니어", "프로젝트 매니저", "IT 컨설턴트"
+        "교사", "의사", "과학자", "엔지니어", "예술가",
+        "운동선수", "요리사", "경찰관", "소방관", "간호사"
     };
     
-    // 과목명 목록
+    // 과목명 목록 (초등학교)
     private static final String[] SUBJECTS = {
-        "자바프로그래밍", "스프링부트", "데이터베이스", "웹개발", "알고리즘",
-        "운영체제", "네트워크", "소프트웨어공학", "컴퓨터구조", "인공지능",
-        "머신러닝", "딥러닝", "클라우드컴퓨팅", "모바일앱개발", "게임개발",
-        "보안프로그래밍", "블록체인", "IoT프로그래밍", "빅데이터분석", "DevOps"
+        "과학", "수학", "영어", "국어"
+    };
+    
+    // 과목 코드 (0: 과학, 1: 수학, 2: 영어, 3: 국어)
+    private static final int[] SUBJECT_CODES = {0, 1, 2, 3};
+    
+    // 학년 목록
+    private static final String[] SCHOOL_YEARS = {"3", "4"};
+    
+    // 소단원 목록 (과목별)
+    private static final String[][] SUBJECT_UNITS = {
+        // 과학 (0)
+        {"식물의 생활", "동물의 생활", "물의 상태 변화", "지구와 달", "전기와 자기", "소리와 빛", "산과 염기", "대기와 날씨", "생태계와 환경", "에너지와 생활"},
+        // 수학 (1)
+        {"덧셈과 뺄셈", "곱셈과 나눗셈", "분수", "소수", "도형", "측정", "자료와 가능성", "규칙성", "비례식", "정비례와 반비례"},
+        // 영어 (2)
+        {"인사하기", "자기소개", "가족 소개", "취미와 관심사", "학교생활", "시간과 날짜", "날씨와 계절", "음식과 음료", "색깔과 모양", "숫자와 셈하기"},
+        // 국어 (3)
+        {"듣기와 말하기", "읽기", "쓰기", "문법", "문학", "어휘", "한자", "독서", "토론", "글짓기"}
     };
     
     // 학기 목록
@@ -122,91 +136,123 @@ public class DataGenerator implements CommandLineRunner {
     // 시험 관련 상수
     private static final String[] EXAM_DIFFICULTIES = {"EASY", "MEDIUM", "HARD"};
     
-    // 시험 문제 세트 (과목별)
+    // 시험 문제 세트 (초등학교 과목별)
     private static final String[][] EXAM_QUESTIONS = {
-        // 자바프로그래밍
+        // 과학 (0)
         {
-            "Java에서 상속을 나타내는 키워드는?",
-            "Java의 기본 데이터 타입 중 정수형이 아닌 것은?",
-            "Java에서 메모리 관리는 어떻게 이루어지는가?",
-            "Java의 접근 제어자 중 가장 제한적인 것은?",
-            "Java에서 다형성을 구현하는 방법은?",
-            "Java에서 인터페이스와 추상클래스의 차이점은?",
-            "Java의 컬렉션 프레임워크에서 List와 Set의 차이점은?",
-            "Java에서 예외처리를 위한 키워드는?",
-            "Java의 스레드와 프로세스의 차이점은?",
-            "Java에서 제네릭(Generic)의 목적은?"
+            "식물이 자라는데 필요한 것 중 가장 중요한 것은?",
+            "동물의 생태계에서 포식자와 피식자의 관계는?",
+            "물의 상태 변화 중 액체에서 기체로 변하는 것은?",
+            "지구의 자전으로 인해 생기는 현상은?",
+            "전기 회로에서 전류가 흐르는 방향은?",
+            "소리의 높낮이를 결정하는 요소는?",
+            "빛의 반사 현상이 일어나는 이유는?",
+            "산과 염기의 중화 반응에서 생성되는 것은?",
+            "지구의 대기권에서 가장 많은 기체는?",
+            "생물의 적응 현상 중 계절에 따른 변화는?"
         },
-        // 데이터베이스
+        // 수학 (1)
         {
-            "SQL에서 데이터를 조회하는 명령어는?",
-            "데이터베이스 정규화의 목적은?",
-            "트랜잭션의 ACID 속성 중 A는?",
-            "인덱스의 주요 목적은?",
-            "외래키(Foreign Key)의 역할은?",
-            "SQL에서 JOIN의 종류는?",
-            "데이터베이스 백업의 중요성은?",
-            "SQL Injection 공격이란?",
-            "데이터베이스 성능 최적화 방법은?",
-            "NoSQL 데이터베이스의 특징은?"
+            "3학년 수학: 25 + 37 = ?",
+            "4학년 수학: 156 ÷ 12 = ?",
+            "3학년 수학: 1/2 + 1/4 = ?",
+            "4학년 수학: 0.5 × 0.3 = ?",
+            "3학년 수학: 1000 - 234 = ?",
+            "4학년 수학: 3/4 × 2/3 = ?",
+            "3학년 수학: 15 × 6 = ?",
+            "4학년 수학: 2.5 + 1.75 = ?",
+            "3학년 수학: 1/3 + 1/6 = ?",
+            "4학년 수학: 0.8 ÷ 0.2 = ?"
         },
-        // 웹개발
+        // 영어 (2)
         {
-            "HTTP 메서드 중 데이터를 생성하는 것은?",
-            "REST API의 특징이 아닌 것은?",
-            "세션과 쿠키의 차이점은?",
-            "CORS 정책의 목적은?",
-            "웹 보안에서 XSS 공격이란?",
-            "웹 서버와 웹 애플리케이션 서버의 차이점은?",
-            "HTTPS의 동작 원리는?",
-            "웹 캐싱의 장점은?",
-            "반응형 웹 디자인의 특징은?",
-            "웹 접근성의 중요성은?"
+            "What is your name?의 뜻은?",
+            "How old are you?에 대한 답으로 적절한 것은?",
+            "I like apples.에서 like의 뜻은?",
+            "This is a book.에서 this의 뜻은?",
+            "Where do you live?의 뜻은?",
+            "What time is it?의 뜻은?",
+            "I can swim.에서 can의 뜻은?",
+            "She is beautiful.에서 beautiful의 뜻은?",
+            "What color is it?의 뜻은?",
+            "How many students are there?의 뜻은?"
+        },
+        // 국어 (3)
+        {
+            "다음 중 명사가 아닌 것은?",
+            "'아름다운'의 품사는?",
+            "다음 중 맞춤법이 올바른 것은?",
+            "'달리다'의 활용형이 아닌 것은?",
+            "다음 중 문장이 올바른 것은?",
+            "'사랑하다'의 어간은?",
+            "다음 중 부사가 아닌 것은?",
+            "'먹다'의 과거형은?",
+            "다음 중 조사가 아닌 것은?",
+            "'가다'의 명령형은?"
         }
     };
     
-    // 객관식 선택지 세트
+    // 객관식 선택지 세트 (초등학교 과목별)
     private static final String[][] MULTIPLE_CHOICE_OPTIONS = {
-        {"extends", "implements", "super", "this"},
-        {"int", "double", "long", "float"},
-        {"가비지 컬렉션", "수동 해제", "참조 카운팅", "메모리 풀"},
-        {"private", "public", "protected", "default"},
-        {"오버라이딩", "오버로딩", "캡슐화", "상속"},
-        {"인터페이스", "추상클래스", "클래스", "열거형"},
-        {"순서 있음 vs 순서 없음", "중복 허용 vs 중복 불허", "인덱스 접근 vs 반복자 접근", "크기 고정 vs 크기 가변"},
-        {"try-catch", "if-else", "switch-case", "for-while"},
-        {"공유 메모리 vs 독립 메모리", "가벼움 vs 무거움", "동시 실행 vs 순차 실행", "생성 비용 vs 생성 비용"},
-        {"타입 안전성", "코드 재사용", "성능 향상", "메모리 절약"},
-        {"SELECT", "INSERT", "UPDATE", "DELETE"},
-        {"데이터 중복 제거", "성능 향상", "보안 강화", "용량 절약"},
-        {"Atomicity", "Availability", "Accuracy", "Accessibility"},
-        {"검색 속도 향상", "저장 공간 절약", "데이터 무결성", "백업 용이성"},
-        {"참조 무결성", "데이터 중복", "성능 향상", "보안 강화"},
-        {"INNER JOIN", "LEFT JOIN", "RIGHT JOIN", "FULL JOIN"},
-        {"데이터 보호", "성능 향상", "용량 절약", "접근 제어"},
-        {"SQL 명령어 삽입", "스크립트 삽입", "파일 업로드", "세션 하이재킹"},
-        {"인덱스 최적화", "쿼리 최적화", "정규화", "모든 것"},
-        {"스키마 없음", "관계형 모델", "ACID 보장", "SQL 사용"},
-        {"GET", "POST", "PUT", "DELETE"},
-        {"무상태성", "캐시 가능", "계층화 시스템", "세션 기반"},
-        {"서버 저장 vs 클라이언트 저장", "용량 차이", "보안 수준", "생명주기"},
-        {"보안 강화", "성능 향상", "호환성 확보", "접근 제어"},
-        {"스크립트 삽입", "SQL 삽입", "CSRF 공격", "DDoS 공격"},
-        {"정적 파일 vs 동적 처리", "단일 서버 vs 분산 서버", "단순 vs 복잡", "빠름 vs 느림"},
-        {"SSL/TLS 암호화", "HTTP 암호화", "세션 암호화", "쿠키 암호화"},
-        {"성능 향상", "대역폭 절약", "서버 부하 감소", "모든 것"},
-        {"반응형 레이아웃", "모바일 최적화", "크로스 브라우징", "모든 것"},
-        {"사용자 편의성", "법적 요구사항", "SEO 최적화", "모든 것"}
+        // 과학 (0)
+        {"물", "햇빛", "공기", "흙"},
+        {"먹고 먹히는 관계", "친구 관계", "경쟁 관계", "협력 관계"},
+        {"증발", "응결", "응고", "융해"},
+        {"낮과 밤", "계절의 변화", "조수간만", "지구의 공전"},
+        {"양극에서 음극으로", "음극에서 양극으로", "무작위로", "정지"},
+        {"진동수", "진폭", "파장", "속도"},
+        {"빛이 매질의 경계에서 튀어나오기 때문", "빛이 흡수되기 때문", "빛이 굴절되기 때문", "빛이 산란되기 때문"},
+        {"소금", "산", "염기", "물"},
+        {"질소", "산소", "이산화탄소", "수소"},
+        {"동면", "이동", "탈피", "번식"},
+        
+        // 수학 (1)
+        {"62", "63", "64", "65"},
+        {"13", "14", "15", "16"},
+        {"3/4", "2/6", "1/6", "2/4"},
+        {"0.15", "0.8", "1.5", "0.08"},
+        {"766", "776", "786", "796"},
+        {"1/2", "6/12", "1/12", "5/12"},
+        {"90", "85", "95", "80"},
+        {"4.25", "4.15", "4.35", "4.05"},
+        {"1/2", "1/6", "2/6", "1/9"},
+        {"4", "0.4", "40", "0.04"},
+        
+        // 영어 (2)
+        {"당신의 이름은 무엇입니까?", "당신은 몇 살입니까?", "당신은 어디에 삽니까?", "당신은 무엇을 좋아합니까?"},
+        {"I am 10 years old", "My name is Kim", "I live in Seoul", "I like pizza"},
+        {"좋아하다", "싫어하다", "먹다", "마시다"},
+        {"이것", "저것", "그것", "무엇"},
+        {"당신은 어디에 삽니까?", "당신은 몇 살입니까?", "당신의 이름은 무엇입니까?", "당신은 무엇을 좋아합니까?"},
+        {"지금 몇 시입니까?", "오늘 날씨는 어떻습니까?", "오늘은 무슨 요일입니까?", "오늘은 몇 월 며칠입니까?"},
+        {"~할 수 있다", "~해야 한다", "~하고 싶다", "~해야 한다"},
+        {"아름다운", "큰", "작은", "빠른"},
+        {"무슨 색입니까?", "무엇입니까?", "어디입니까?", "언제입니까?"},
+        {"학생이 몇 명입니까?", "교실이 몇 개입니까?", "책이 몇 권입니까?", "펜이 몇 개입니까?"},
+        
+        // 국어 (3)
+        {"달리다", "학교", "친구", "책상"},
+        {"형용사", "명사", "동사", "부사"},
+        {"되다", "돼다", "안되다", "안돼다"},
+        {"달린다", "달렸다", "달리자", "달리면"},
+        {"나는 학교에 간다", "나는 학교에 가다", "나는 학교에 가고", "나는 학교에 가서"},
+        {"사랑하", "사랑하다", "사랑한", "사랑할"},
+        {"빨리", "아름답게", "크게", "학교"},
+        {"먹었다", "먹는다", "먹자", "먹으면"},
+        {"은", "있다", "없다", "많다"},
+        {"가라", "가다", "간다", "갔다"}
     };
     
-    // 단답형 답안 세트
-    private static final String[] SHORT_ANSWER_ANSWERS = {
-        "extends", "double", "가비지 컬렉션", "private", "오버라이딩",
-        "인터페이스", "순서 있음 vs 순서 없음", "try-catch", "공유 메모리 vs 독립 메모리", "타입 안전성",
-        "SELECT", "데이터 중복 제거", "Atomicity", "검색 속도 향상", "참조 무결성",
-        "INNER JOIN", "데이터 보호", "SQL 명령어 삽입", "인덱스 최적화", "스키마 없음",
-        "POST", "무상태성", "서버 저장 vs 클라이언트 저장", "보안 강화", "스크립트 삽입",
-        "정적 파일 vs 동적 처리", "SSL/TLS 암호화", "성능 향상", "반응형 레이아웃", "사용자 편의성"
+    // 단답형 답안 세트 (초등학교 과목별)
+    private static final String[][] SHORT_ANSWER_ANSWERS = {
+        // 과학 (0)
+        {"물", "먹고 먹히는 관계", "증발", "낮과 밤", "음극에서 양극으로", "진동수", "빛이 매질의 경계에서 튀어나오기 때문", "소금", "질소", "동면"},
+        // 수학 (1)
+        {"62", "13", "3/4", "0.15", "766", "1/2", "90", "4.25", "1/2", "4"},
+        // 영어 (2)
+        {"당신의 이름은 무엇입니까?", "I am 10 years old", "좋아하다", "이것", "당신은 어디에 삽니까?", "지금 몇 시입니까?", "~할 수 있다", "아름다운", "무슨 색입니까?", "학생이 몇 명입니까?"},
+        // 국어 (3)
+        {"달리다", "형용사", "되다", "달린다", "나는 학교에 간다", "사랑하", "빨리", "먹었다", "은", "가라"}
     };
     
     @Override
@@ -267,7 +313,7 @@ public class DataGenerator implements CommandLineRunner {
         
         for (int i = 0; i < config.getTeacherCount(); i++) {
             User teacher = User.builder()
-                    .email("teacher" + (i + 1) + "@university.edu")
+                    .email("teacher" + (i + 1) + "@elementary.edu")
                     .passwordHash("hashed_password_teacher_" + (i + 1))
                     .role(User.UserRole.TEACHER)
                     .isActive(true)
@@ -285,7 +331,7 @@ public class DataGenerator implements CommandLineRunner {
         
         for (int i = 0; i < config.getStudentCount(); i++) {
             User student = User.builder()
-                    .email("student" + (i + 1) + "@university.edu")
+                    .email("student" + (i + 1) + "@elementary.edu")
                     .passwordHash("hashed_password_student_" + (i + 1))
                     .role(User.UserRole.STUDENT)
                     .isActive(true)
@@ -308,7 +354,7 @@ public class DataGenerator implements CommandLineRunner {
                     .name(teacherName)
                     .desiredCourse(DESIRED_COURSES[random.nextInt(DESIRED_COURSES.length)])
                     .desiredJob(DESIRED_JOBS[random.nextInt(DESIRED_JOBS.length)])
-                    .birthDate(generateRandomBirthDate(30, 60)) // 교사는 30-60세
+                    .birthDate(generateRandomBirthDate(25, 50)) // 초등학교 교사는 25-50세
                     .school(SCHOOLS[random.nextInt(SCHOOLS.length)])
                     .phone("010-" + String.format("%04d", random.nextInt(10000)) + "-" + String.format("%04d", random.nextInt(10000)))
                     .createdAt(OffsetDateTime.now())
@@ -328,7 +374,7 @@ public class DataGenerator implements CommandLineRunner {
                     .name(studentName)
                     .desiredCourse(DESIRED_COURSES[random.nextInt(DESIRED_COURSES.length)])
                     .desiredJob(DESIRED_JOBS[random.nextInt(DESIRED_JOBS.length)])
-                    .birthDate(generateRandomBirthDate(18, 25)) // 학생은 18-25세
+                    .birthDate(generateRandomBirthDate(8, 11)) // 초등학교 3-4학년 학생은 8-11세
                     .school(SCHOOLS[random.nextInt(SCHOOLS.length)])
                     .phone("010-" + String.format("%04d", random.nextInt(10000)) + "-" + String.format("%04d", random.nextInt(10000)))
                     .createdAt(OffsetDateTime.now())
@@ -355,7 +401,9 @@ public class DataGenerator implements CommandLineRunner {
             List<Class> teacherClasses = new ArrayList<>(); // 교사별로 이미 생성된 강좌들
             
             for (int i = 0; i < config.getClassPerTeacher(); i++) {
-                String subject = SUBJECTS[classIndex % SUBJECTS.length];
+                int subjectCode = SUBJECT_CODES[classIndex % SUBJECT_CODES.length];
+                String subject = SUBJECTS[subjectCode];
+                String schoolYear = SCHOOL_YEARS[random.nextInt(SCHOOL_YEARS.length)];
                 String semester = SEMESTERS[random.nextInt(SEMESTERS.length)];
                 
                 // 시간 충돌이 없는 요일/시간 조합 찾기
@@ -369,11 +417,17 @@ public class DataGenerator implements CommandLineRunner {
                     schedule = new ClassSchedule(dayPattern, timePattern[0], timePattern[1]);
                 }
                 
+                // 소단원 선택
+                String[] units = SUBJECT_UNITS[subjectCode];
+                String unit = units[random.nextInt(units.length)];
+                
                 Class classEntity = Class.builder()
                         .teacherId(teacher.getUserId())
                         .teacherName(TEACHER_NAMES[teachers.indexOf(teacher) % TEACHER_NAMES.length])
-                        .className(subject)
+                        .className(unit)
                         .semester(semester)
+                        .schoolYear(schoolYear)
+                        .subject(subjectCode)
                         .zoomUrl("https://zoom.us/j/" + (100000000 + random.nextInt(900000000)))
                         .heldDay(schedule.dayPattern)
                         .startsAt(schedule.startTime)
@@ -699,7 +753,7 @@ public class DataGenerator implements CommandLineRunner {
                         
                         // 문제 생성 (5~8개 랜덤)
                         int questionCount = 5 + random.nextInt(4); // 5~8개
-                        List<Question> questions = createQuestions(exam, questionCount);
+                        List<Question> questions = createQuestions(exam, questionCount, sessionClass);
                         questionRepository.saveAll(questions);
                         
                         // 수강생들의 제출물 생성
@@ -710,7 +764,7 @@ public class DataGenerator implements CommandLineRunner {
                             
                             // 각 문제별 답안 생성
                             for (Question question : questions) {
-                                SubmissionAnswer answer = createSubmissionAnswer(submission, question, student);
+                                SubmissionAnswer answer = createSubmissionAnswer(submission, question, student, sessionClass);
                                 submissionAnswerRepository.save(answer);
                             }
                         }
@@ -725,7 +779,7 @@ public class DataGenerator implements CommandLineRunner {
     }
     
     private Exam createExam(Session session, Class sessionClass) {
-        String examName = sessionClass.getClassName() + " 중간고사";
+        String examName = sessionClass.getClassName() + " 단원평가";
         String difficulty = EXAM_DIFFICULTIES[random.nextInt(EXAM_DIFFICULTIES.length)];
         
         Exam exam = new Exam();
@@ -739,14 +793,14 @@ public class DataGenerator implements CommandLineRunner {
         return exam;
     }
     
-    private List<Question> createQuestions(Exam exam, int questionCount) {
+    private List<Question> createQuestions(Exam exam, int questionCount, Class sessionClass) {
         List<Question> questions = new ArrayList<>();
         
-        // 과목에 따른 문제 세트 선택
-        int subjectIndex = Math.abs(exam.getName().hashCode()) % EXAM_QUESTIONS.length;
-        String[] subjectQuestions = EXAM_QUESTIONS[subjectIndex];
-        String[] subjectChoices = MULTIPLE_CHOICE_OPTIONS[subjectIndex];
-        String[] subjectAnswers = SHORT_ANSWER_ANSWERS;
+        // 클래스의 과목 정보를 사용하여 문제 세트 선택
+        int subjectCode = sessionClass.getSubject();
+        String[] subjectQuestions = EXAM_QUESTIONS[subjectCode];
+        String[] subjectChoices = MULTIPLE_CHOICE_OPTIONS[subjectCode];
+        String[] subjectAnswers = SHORT_ANSWER_ANSWERS[subjectCode];
         
         for (int i = 0; i < questionCount; i++) {
             QuestionType qtype = random.nextBoolean() ? QuestionType.MCQ : QuestionType.SHORT;
@@ -793,7 +847,7 @@ public class DataGenerator implements CommandLineRunner {
         List<SubmissionAnswer> answers = new ArrayList<>();
         
         for (Question question : questions) {
-            SubmissionAnswer answer = createSubmissionAnswer(null, question, student);
+            SubmissionAnswer answer = createSubmissionAnswer(null, question, student, null);
             answers.add(answer);
             totalScore = totalScore.add(answer.getScore());
         }
@@ -808,7 +862,7 @@ public class DataGenerator implements CommandLineRunner {
         return submission;
     }
     
-    private SubmissionAnswer createSubmissionAnswer(Submission submission, Question question, User student) {
+    private SubmissionAnswer createSubmissionAnswer(Submission submission, Question question, User student, Class sessionClass) {
         String answerText;
         boolean isCorrect;
         BigDecimal score;

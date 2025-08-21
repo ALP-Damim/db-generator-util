@@ -8,5 +8,5 @@ import java.util.List;
 
 
 public interface SubmissionAnswerRepository extends JpaRepository<SubmissionAnswer, SubmissionAnswerId> {
-    List<SubmissionAnswer> findBySubmissionExamIdAndSubmissionUserId(Integer submissionExamId, Integer submissionUserId);
+    List<SubmissionAnswer> findByExamIdAndUserId(Integer examId, Integer userId);
 }

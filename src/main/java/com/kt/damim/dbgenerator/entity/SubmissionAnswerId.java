@@ -9,22 +9,22 @@ import java.util.Objects;
 public class SubmissionAnswerId implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private Integer submissionExamId;
-    private Integer submissionUserId;
+    private Integer examId;
+    private Integer userId;
     private Integer questionId;
 
     public SubmissionAnswerId() {}
 
-    public SubmissionAnswerId(Integer submissionExamId, Integer submissionUserId, Integer questionId) {
-        this.submissionExamId = submissionExamId;
-        this.submissionUserId = submissionUserId;
+    public SubmissionAnswerId(Integer examId, Integer userId, Integer questionId) {
+        this.examId = examId;
+        this.userId = userId;
         this.questionId = questionId;
     }
 
-    public Integer getSubmissionExamId() { return submissionExamId; }
-    public void setSubmissionExamId(Integer submissionExamId) { this.submissionExamId = submissionExamId; }
-    public Integer getSubmissionUserId() { return submissionUserId; }
-    public void setSubmissionUserId(Integer submissionUserId) { this.submissionUserId = submissionUserId; }
+    public Integer getExamId() { return examId; }
+    public void setExamId(Integer examId) { this.examId = examId; }
+    public Integer getUserId() { return userId; }
+    public void setUserId(Integer userId) { this.userId = userId; }
     public Integer getQuestionId() { return questionId; }
     public void setQuestionId(Integer questionId) { this.questionId = questionId; }
 
@@ -33,13 +33,13 @@ public class SubmissionAnswerId implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SubmissionAnswerId that = (SubmissionAnswerId) o;
-        return Objects.equals(submissionExamId, that.submissionExamId) && 
-               Objects.equals(submissionUserId, that.submissionUserId) && 
+        return Objects.equals(examId, that.examId) && 
+               Objects.equals(userId, that.userId) && 
                Objects.equals(questionId, that.questionId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(submissionExamId, submissionUserId, questionId);
+        return Objects.hash(examId, userId, questionId);
     }
 }
